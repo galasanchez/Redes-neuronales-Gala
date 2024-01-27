@@ -11,14 +11,14 @@ and omits many desirable features.
 
 #### Libraries
 # Standard library
-import random
+import random #librería para generar números aleatorios en distintas distribuciones
 
 # Third-party libraries
-import numpy as np
+import numpy as np #permite realizar operaciones matemáticas y crear arreglos n-dimensionales
 
-class Network(object):
+class Network(object): #crear clase llamada Network
 
-    def __init__(self, sizes):
+    def __init__(self, sizes): #la clase está constituida por capas, sus números de neuronas y sus biases y pesos
         """The list ``sizes`` contains the number of neurons in the
         respective layers of the network.  For example, if the list
         was [2, 3, 1] then it would be a three-layer network, with the
@@ -29,20 +29,21 @@ class Network(object):
         layer is assumed to be an input layer, and by convention we
         won't set any biases for those neurons, since biases are only
         ever used in computing the outputs from later layers."""
-        self.num_layers = len(sizes)
+        self.num_layers = len(sizes) #los self son los atributos de la clase, y sus argumentos
         self.sizes = sizes
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
 
-    def feedforward(self, a):
+    def feedforward(self, a): #definir la función feedforward
+        #es la evaluación que el algoritmo requiere para carculas la z^l en cada capa
         """Return the output of the network if ``a`` is input."""
-        for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a)+b)
-        return a
+        for b, w in zip(self.biases, self.weights): #zip une cada bias con su peso correspondiente
+            a = sigmoid(np.dot(w, a)+b) #función de activación sigmoide, el nuevo valor de a es sigma con argumento aw+b
+        return a #siempre tiene valor entre 0 y 1
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
-            test_data=None):
+            test_data=None): #definimos la función Stochastic Gradient Descent
         """Train the neural network using mini-batch stochastic
         gradient descent.  The ``training_data`` is a list of tuples
         ``(x, y)`` representing the training inputs and the desired
@@ -86,11 +87,12 @@ class Network(object):
         self.biases = [b-(eta/len(mini_batch))*nb
                        for b, nb in zip(self.biases, nabla_b)]
 
-    def backprop(self, x, y):
+    def backprop(self, x, y): #definir algoritmo backpropagation
         """Return a tuple ``(nabla_b, nabla_w)`` representing the
         gradient for the cost function C_x.  ``nabla_b`` and
         ``nabla_w`` are layer-by-layer lists of numpy arrays, similar
-        to ``self.biases`` and ``self.weights``."""
+        to ``self.biases`` and ``self.weights``.""" 
+        #el gradiente de C nos indica la dirección de máximo cambio de la función de costo
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         # feedforward
@@ -98,14 +100,14 @@ class Network(object):
         activations = [x] # list to store all the activations, layer by layer
         zs = [] # list to store all the z vectors, layer by layer
         for b, w in zip(self.biases, self.weights):
-            z = np.dot(w, activation)+b
-            zs.append(z)
-            activation = sigmoid(z)
-            activations.append(activation)
+            z = np.dot(w, activation)+b #darle el nuevo valor a z
+            zs.append(z) #agregar el nuevo z a la lista
+            activation = sigmoid(z) #definir nueva a
+            activations.append(activation) #agregar a la lista de activaciones
         # backward pass
         delta = self.cost_derivative(activations[-1], y) * \
             sigmoid_prime(zs[-1])
-        nabla_b[-1] = delta
+        nabla_b[-1] = delta #este delta^L es el error de la última capa, a partir de aquí propaga hacia atrás para calcular delta^l
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Note that the variable l in the loop below is used a little
         # differently to the notation in Chapter 2 of the book.  Here,
@@ -119,9 +121,11 @@ class Network(object):
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
-        return (nabla_b, nabla_w)
+        return (nabla_b, nabla_w) #vector nabla C
+        #obtengo la derivada de la función de costo C con respecto a bias y weights de todos los parámetros del modelo
 
-    def evaluate(self, test_data):
+    def evaluate(self, test_data): #suma de pruebas en las que la red obtiene el resultado correcto
+        #prueba de funcionamiento de la red
         """Return the number of test inputs for which the neural
         network outputs the correct result. Note that the neural
         network's output is assumed to be the index of whichever
@@ -136,10 +140,10 @@ class Network(object):
         return (output_activations-y)
 
 #### Miscellaneous functions
-def sigmoid(z):
+def sigmoid(z): #función de activación sigmoide
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
 
-def sigmoid_prime(z):
+def sigmoid_prime(z): #derivada de la sigmoide, necesaria para el backpropagation
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))

@@ -14,12 +14,6 @@ class Network(object):
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
-        self.m_sq_weights = [np.zeros(w.shape) for w in self.weights] 
-        #lista de matrices para realizar un seguimiento de los cuadrados de los gradientes con respecto a los pesos correspondientes en la red.
-        #se utilizan posteriormente en el cálculo de la actualización de los pesos en el algoritmo RMSprop.
-        self.m_sq_biases = [np.zeros(b.shape) for b in self.biases]   
-        #lista de matrices que se utiliza para realizar un seguimiento de los cuadrados de los gradientes con respecto a los sesgos correspondientes en la red. 
-        #estos cuadrados también se utilizan posteriormente en el cálculo de la actualización de los sesgos en el algoritmo RMSprop.
 
     def feedforward(self, a): #definir la función feedforward
         #es la evaluación que el algoritmo requiere para calcular la z^l en cada capa
@@ -49,10 +43,7 @@ class Network(object):
             else:
                 print("Epoch {} complete".format(j))
 
-#rho es un parámetro de decaimiento que determina el peso que se le da a gradientes pasados, 0.9 es su valor típico
-#epsilon es un pequeño valor añadido al denominador para evitar la divisón entre 0 y su valor típico es 1e-8
-#ambos son necesarios para el RMSProp
-    def update_mini_batch(self, mini_batch, eta, rho=0.9, epsilon=1e-8):
+    def update_mini_batch(self, mini_batch, eta):
 
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
@@ -62,12 +53,10 @@ class Network(object):
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
 
-        self.m_sq_weights = [rho * m_sq_w + (1 - rho) * (nw ** 2) for m_sq_w, nw in zip(self.m_sq_weights, nabla_w)]
-        self.m_sq_biases = [rho * m_sq_b + (1 - rho) * (nb ** 2) for m_sq_b, nb in zip(self.m_sq_biases, nabla_b)]
-
-        self.weights = [w - eta * nw / (np.sqrt(m_sq_w) + epsilon) for w, nw, m_sq_w in zip(self.weights, nabla_w, self.m_sq_weights)]  #actualiza los weights
-        self.biases = [b - eta * nb / (np.sqrt(m_sq_b) + epsilon) for b, nb, m_sq_b in zip(self.biases, nabla_b, self.m_sq_biases)]  #actualiza los biases
-    #se implementa RMSprop para adaptar la tasa de aprendizaje para cada peso y sesgo buscando mejorar la convergencia
+        self.weights = [w-(eta/len(mini_batch))*nw
+                        for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b-(eta/len(mini_batch))*nb
+                       for b, nb in zip(self.biases, nabla_b)]
 
     def backprop(self, x, y): #definir algoritmo backpropagation
         #el gradiente de C nos indica la dirección de máximo cambio de la función de costo
@@ -129,17 +118,19 @@ def softmax(z):
 
 #### Miscellaneous functions
 def sigmoid(z): #función de activación sigmoide
+    """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
 
 def sigmoid_prime(z): #derivada de la sigmoide, necesaria para el backpropagation
+    """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
 
 
-## Carga de datos de entrenamiento, validación y prueba con MNIST_loader
+##Carga de datos de entrenamiento, validación y prueba con MNIST_loader
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 ## Creación de la red neuronal con capas (x,y,z)
 net = Network([784,30,10])
 
 ## Entrenamiento de la red
-net.SGD(training_data, 30, 10, 0.01, test_data=test_data) #ya no es SGD porquelo modificamos y ahora utiliza el método de RMSProp
+net.SGD(training_data, 30, 10, 0.01, test_data=test_data)

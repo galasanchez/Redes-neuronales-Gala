@@ -1,1 +1,0 @@
-Red densa secuencial con Keras

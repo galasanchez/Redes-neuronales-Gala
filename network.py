@@ -139,7 +139,7 @@ def sigmoid_prime(z): #derivada de la sigmoide, necesaria para el backpropagatio
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 ## Creación de la red neuronal con capas (x,y,z)
-net = Network([784,30,10])
+net = Network([784, 30, 10])
 
 ## Entrenamiento de la red
-net.SGD(training_data, 30, 10, 0.01, test_data=test_data) #ya no es SGD porquelo modificamos y ahora utiliza el método de RMSProp
+net.SGD(training_data, 30, 10, 0.1, test_data=test_data) #ya no es SGD porque lo modificamos y ahora utiliza el método de RMSProp

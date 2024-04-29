@@ -6,14 +6,14 @@ from tensorflow import keras
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.utils import to_categorical
 
 
 #Configuración de learning rate, número de épocas y batch size
 learning_rate = 0.01
-epochs = 40
-batch_size = 15
+epochs = 30
+batch_size = 10
 
 
 #Cargar los datos del conjunto MNIST
@@ -47,7 +47,7 @@ model.summary()  #Imprime un resumen de la arquitectura del modelo
 
 
 #Compilación del modelo
-model.compile(loss='categorical_crossentropy',optimizer=RMSprop(learning_rate=learning_rate),metrics=['accuracy']) 
+model.compile(loss='categorical_crossentropy',optimizer=SGD(learning_rate=learning_rate),metrics=['accuracy']) 
 #configura el entrenamiento de la red especificando la función de pérdida, optimizador y las métricas a usar en el entrenamiento y evaluación de la red, en este caso se usa la 'exactitud'
 
 

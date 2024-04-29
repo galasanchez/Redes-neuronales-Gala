@@ -12,8 +12,8 @@ from tensorflow.keras.utils import to_categorical
 
 #Configuración de learning rate, número de épocas y batch size
 learning_rate = 0.01
-epochs = 40
-batch_size = 15
+epochs = 30
+batch_size = 10
 
 
 #Cargar los datos del conjunto MNIST

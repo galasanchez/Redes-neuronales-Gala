@@ -5,13 +5,15 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.layers import Dense, Dropout, Activation
+from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.regularizers import L1
+import matplotlib.pyplot as plt
 
 
 #Configuración de learning rate, número de épocas y batch size
-learning_rate = 0.01
+learning_rate = 0.001
 epochs = 30
 batch_size = 10
 
@@ -38,16 +40,16 @@ y_testc = to_categorical(y_test, num_classes)
 
 
 #Creación de la red neuronal
-model = Sequential() #crea el objeto de modelo sencuencial en Keras (capas apiladas una encima de la otra)
-model.add(Dense(100, activation='relu', input_shape=(784,)))  #agrega una capa densa a la RNA con x neuronas, usa la función de activación sigmoide y tiene una capa de entrada de 784
-model.add(Dense(num_classes, activation='relu'))  #segunda capa densa con neuronas = 'num_classes' (generalmente 10) y usa la función de activación sigmoide.
-
+model = Sequential() #crea el objeto de modelo secuencial en Keras (capas apiladas una encima de la otra)
+model.add(Dense(200, activation='sigmoid', input_shape=(784,), kernel_regularizer=L1(0.001))) #Agrega una capa densa a la RNA con x neuronas, usa la función de activación sigmoide y tiene una capa de entrada de 784 
+model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer=L1(0.001))) 
+  
 
 model.summary()  #Imprime un resumen de la arquitectura del modelo
 
 
 #Compilación del modelo
-model.compile(loss='categorical_crossentropy',optimizer=SGD(learning_rate=learning_rate),metrics=['accuracy']) 
+model.compile(loss='categorical_crossentropy',optimizer=RMSprop(learning_rate=learning_rate),metrics=['accuracy']) 
 #configura el entrenamiento de la red especificando la función de pérdida, optimizador y las métricas a usar en el entrenamiento y evaluación de la red, en este caso se usa la 'exactitud'
 
 
@@ -67,3 +69,9 @@ score = model.evaluate(x_testv, y_testc, verbose=0)  #evalúa el modelo usando l
 
 print('Pérdida en el conjunto de prueba:', score[0]) #Imprime la función de pérdida
 print('Precisión en el conjunto de prueba:', score[1]) #Imprime la precisión 
+
+# Gráfico de precisión
+plt.plot(history.history['accuracy'], label='train')
+plt.plot(history.history['val_accuracy'], label='test')
+plt.legend()
+plt.show()

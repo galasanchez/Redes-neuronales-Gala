@@ -8,7 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.regularizers import L1
+from tensorflow.keras.regularizers import L2
 import matplotlib.pyplot as plt
 
 
@@ -41,8 +41,8 @@ y_testc = to_categorical(y_test, num_classes)
 
 #Creación de la red neuronal
 model = Sequential() #crea el objeto de modelo secuencial en Keras (capas apiladas una encima de la otra)
-model.add(Dense(200, activation='sigmoid', input_shape=(784,), kernel_regularizer=L1(0.001))) #Agrega una capa densa a la RNA con x neuronas, usa la función de activación sigmoide y tiene una capa de entrada de 784 
-model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer=L1(0.001))) 
+model.add(Dense(200, activation='sigmoid', input_shape=(784,), kernel_regularizer=L2(0.001))) #Agrega una capa densa a la RNA con x neuronas, usa la función de activación sigmoide y tiene una capa de entrada de 784 
+model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer=L2(0.001))) 
   
 
 model.summary()  #Imprime un resumen de la arquitectura del modelo
@@ -65,7 +65,7 @@ history = model.fit(x_trainv, y_trainc,     #datos de entrada usados para aprend
 
 
 #Evaluación y predicciones del modelo
-score = model.evaluate(x_testv, y_testc, verbose=0)  #evalúa el modelo usando los datos de prueba, la variable score guarda los valores de pérdida y la métrica (accuracy)
+score = model.evaluate(x_testv, y_testc, verbose=1)  #evalúa el modelo usando los datos de prueba, la variable score guarda los valores de pérdida y la métrica (accuracy)
 
 print('Pérdida en el conjunto de prueba:', score[0]) #Imprime la función de pérdida
 print('Precisión en el conjunto de prueba:', score[1]) #Imprime la precisión 

@@ -41,8 +41,10 @@ y_testc = to_categorical(y_test, num_classes)
 
 #Creación de la red neuronal
 model = Sequential() #crea el objeto de modelo secuencial en Keras (capas apiladas una encima de la otra)
-model.add(Dense(200, activation='sigmoid', input_shape=(784,), kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.001, l2=0.001))) #Agrega una capa densa a la RNA con x neuronas, usa la función de activación sigmoide y tiene una capa de entrada de 784 
-model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.001, l2=0.001))) 
+model.add(Dense(200, activation='sigmoid', input_shape=(784,))) #Agrega una capa densa a la RNA con x neuronas, usa la función de activación sigmoide y tiene una capa de entrada de 784 
+model.add(Dropout(0.4)) #capa dropout tasa 50%
+model.add(Dense(num_classes, activation='sigmoid')) 
+
   
 
 model.summary()  #Imprime un resumen de la arquitectura del modelo
